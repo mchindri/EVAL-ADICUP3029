@@ -49,15 +49,18 @@ def print_build(build_name, project):
 						to_blue(project)))
 
 def build_cces_project(adicup_location, project, project_dir, export_dir):
-        DEFAULT_WORKSPACE = os.path.join(adicup_location, 'projects')
+        DEFAULT_WORKSPACE = os.path.join(adicup_location, 'workspace')
         CCES_TEMPLATE = "cces -nosplash \
--application com.analog.crosscore.headlesstools data %s -project %s -build Debug"
+-application com.analog.crosscore.headlesstools data %s -project %s "
         print_build("cces", project)
 
         cces_cmd = CCES_TEMPLATE % (DEFAULT_WORKSPACE, project_dir)
-        run_cmd(cces_cmd)
+        run_cmd(cces_cmd + '-copy')
 
-        binary = os.path.join(project_dir, 'Debug', project)
+        cces_cmd = CCES_TEMPLATE % (DEFAULT_WORKSPACE, project)
+        run_cmd(cces_cmd + '-build Debug')
+
+        binary = os.path.join(DEFAULT_WORKSPACE, project, 'Debug', project)
         hex = os.path.join(export_dir, project + '.hex')
         run_cmd("arm-none-eabi-objcopy -O ihex %s %s" % (binary, hex))
         print(TGREEN + "DONE" + TWHITE)
