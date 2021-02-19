@@ -10,36 +10,8 @@ pr:
 
 variables:
 - group: noos_releases_group_variables
-- name: runCondition
-  value: true
-- name: targetBranch
-  value: $[ variables['Build.SourceBranchName'] ]
 
 jobs:
-#- job: LinuxBuilds
-#  strategy:
-#    matrix:
-#      astyle:
-#        imageName: 'ubuntu-latest'
-#        BUILD_TYPE: astyle
-#        TARGET_BRANCH: '$(targetBranch)'
-#      cppcheck:
-#        imageName: 'ubuntu-latest'
-#        BUILD_TYPE: cppcheck
-#        TARGET_BRANCH: '$(targetBranch)'
-#
-#  pool:
-#      vmImage: $(imageName)
-#  steps:
-#  - checkout: self
-#    condition: eq(variables.runCondition, true)
-#    fetchDepth: 50
-#    clean: true
-#    persistCredentials: false
-#  - script: ./ci/travis/run_build.sh
-#    condition: eq(variables.runCondition, true)
-#    displayName: 'Run $(BUILD_TYPE)'
-
 - job: Projects
   pool: LocalPool
   steps:
@@ -49,9 +21,9 @@ jobs:
     submodules: recursive
     clean: true
     persistCredentials: true
-  - script: 'python ./build_projects.py $(RELEASE_DIR)'
+  - script: 'python ./build_projects.py $(Build.Repository.LocalPath) $(RELEASE_DIR)'
     condition: eq(variables.runCondition, true)
-    displayName: 'Run project build'
+    displayName: 'Run projects build'
   - task: PublishPipelineArtifact@1
     inputs:
       targetPath: '$(Build.Repository.LocalPath)/$(RELEASE_DIR).zip'
