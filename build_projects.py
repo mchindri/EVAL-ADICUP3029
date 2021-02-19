@@ -27,6 +27,7 @@ def parse_input():
     return (args.adicup_location, args.export_dir)
 
 VERBOSE = 0
+DEBUG = 0
 
 def run_cmd(cmd):
 	log_file = 'log.txt'
@@ -54,11 +55,19 @@ def build_cces_project(adicup_location, project, project_dir, export_dir):
 -application com.analog.crosscore.headlesstools -data %s -project %s "
         print_build("cces", project)
 
-        cces_cmd = CCES_TEMPLATE % (DEFAULT_WORKSPACE, project_dir)
-        run_cmd(cces_cmd + '-copy')
+        if DEBUG == 1:
+                # This will not update the project in the projects folder
+                # only in workspace anyway some project may not work because
+                # they don't have the same name as the folder:
+                # cn0357, adt7420, adxl362, asset_health, cn0397, ad5592r
+                cces_cmd = CCES_TEMPLATE % (DEFAULT_WORKSPACE, project_dir)
+                run_cmd(cces_cmd + '-copy')
 
-        cces_cmd = CCES_TEMPLATE % (DEFAULT_WORKSPACE, project)
-        run_cmd(cces_cmd + '-build Debug')
+                cces_cmd = CCES_TEMPLATE % (DEFAULT_WORKSPACE, project)
+                run_cmd(cces_cmd + '-build Debug')
+        else:
+                cces_cmd = CCES_TEMPLATE % (DEFAULT_WORKSPACE, project_dir)
+                run_cmd(cces_cmd + '-build Debug')
 
         binary = os.path.join(DEFAULT_WORKSPACE, project, 'Debug', project)
         hex = os.path.join(export_dir, project + '.hex')
@@ -86,10 +95,12 @@ def main():
 	(adicup_location, export_dir) = parse_input()
 	projets = os.path.join(adicup_location,'projects')
 	run_cmd("test -d {0} || mkdir -p {0}".format(export_dir))
-	for project in os.listdir(projets):
+        dirs = os.listdir(projets)
+	for project in dirs:
 		project_dir = os.path.join(projets, project)
 		build_file = os.path.join(project_dir, 'builds.json')
 		if os.path.isfile(build_file):
+                        pass
                         build_noos_project(build_file, project, project_dir, export_dir)
                 else:
                         build_cces_project(adicup_location, project, project_dir, export_dir)
