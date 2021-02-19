@@ -65,11 +65,12 @@ def build_cces_project(adicup_location, project, project_dir, export_dir):
 
                 cces_cmd = CCES_TEMPLATE % (DEFAULT_WORKSPACE, project)
                 run_cmd(cces_cmd + '-build Debug')
+                binary = os.path.join(DEFAULT_WORKSPACE, project, 'Debug', project)
         else:
                 cces_cmd = CCES_TEMPLATE % (DEFAULT_WORKSPACE, project_dir)
                 run_cmd(cces_cmd + '-build Debug')
+                binary = os.path.join(project_dir, 'Debug', project)
 
-        binary = os.path.join(DEFAULT_WORKSPACE, project, 'Debug', project)
         hex = os.path.join(export_dir, project + '.hex')
         run_cmd("arm-none-eabi-objcopy -O ihex %s %s" % (binary, hex))
         print(TGREEN + "DONE" + TWHITE)
