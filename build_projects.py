@@ -51,7 +51,7 @@ def print_build(build_name, project):
 def build_cces_project(adicup_location, project, project_dir, export_dir):
         DEFAULT_WORKSPACE = os.path.join(adicup_location, 'workspace')
         CCES_TEMPLATE = "cces -nosplash \
--application com.analog.crosscore.headlesstools data %s -project %s "
+-application com.analog.crosscore.headlesstools -data %s -project %s "
         print_build("cces", project)
 
         cces_cmd = CCES_TEMPLATE % (DEFAULT_WORKSPACE, project_dir)
